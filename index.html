@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>School Calendar 2025–26</title>
+  <style>
+    :root{
+      --bg:#0b1020;          /* deep slate */
+      --card:#121931;        /* card bg */
+      --muted:#9fb2cc;       /* muted text */
+      --text:#e9f0fb;        /* main text */
+      --accent:#5aa9ff;      /* headers, highlights */
+      --accent-2:#7ed957;    /* type pill */
+      --ring:#274a8a;
+      --table-row:#0f1530;
+      --row-alt:#0c1226;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:500 16px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -20%, #19325d 0%, rgba(8,11,22,0) 60%),
+                  radial-gradient(1000px 600px at 100% 0%, #0f2356 0%, rgba(8,11,22,0) 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1200px;margin:40px auto;padding:24px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 30px 80px rgba(0,0,0,.35);
+      border-radius:20px; overflow:hidden
+    }
+    header{
+      padding:28px 28px 16px; border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap
+    }
+    header h1{font-size:clamp(22px,3vw,30px);line-height:1.1;margin:0}
+    header p{margin:0;color:var(--muted)}
+
+    .controls{display:flex; gap:12px; flex-wrap:wrap; margin:14px 0 0}
+    .control{
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+      border-radius:999px; padding:10px 14px; display:flex; align-items:center; gap:8px;
+    }
+    .control input, .control select{
+      background:transparent; border:none; outline:none; color:black;
+      font-size:14px; min-width:120px
+    }
+
+    table{width:100%; border-collapse:separate; border-spacing:0;}
+    thead th{
+      position:sticky; top:0; z-index:1;
+      background:rgba(19,28,58,.92); backdrop-filter: blur(6px);
+      color:var(--text); text-align:left; font-weight:700; letter-spacing:.02em;
+      padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.1);
+    }
+    tbody tr{background:var(--row-alt)}
+    tbody tr:nth-child(2n){background:var(--table-row)}
+    td{padding:14px 16px; vertical-align:top; border-bottom:1px dashed rgba(255,255,255,.06)}
+    .date{white-space:nowrap; font-variant-numeric:tabular-nums; color:#cfe1ff}
+    .title{font-weight:600}
+    .desc{color:var(--muted)}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:650; letter-spacing:.02em}
+    .t-academic{background:#304ffe22; border:1px solid #6c8bff66; color:#bcd0ff}
+    .t-events{background:#1b5e2022; border:1px solid #66bb6a66; color:#c7f3ce}
+    .t-religious-holiday{background:#6a1b9a22; border:1px solid #ba68c866; color:#f0d4ff}
+    .t-national-holiday{background:#b71c1c22; border:1px solid #ef535066; color:#ffd6d4}
+    .t-sports{background:#01579b22; border:1px solid #4fc3f766; color:#d3efff}
+    .t-exam{background:#ff6f0022; border:1px solid #ffb74d66; color:#ffe6c7}
+    .t-parent-meet{background:#3e272322; border:1px solid #a1887f66; color:#e8dcd7}
+
+    .footer{padding:18px 24px; color:var(--muted); font-size:13px}
+    .hidden{display:none}
+
+    @media (max-width: 760px){
+      thead{display:none}
+      table, tbody, tr, td{display:block; width:100%}
+      tr{margin:0 0 14px; border:1px solid rgba(255,255,255,.08); border-radius:14px; overflow:hidden}
+      td{border:none;border-bottom:1px dashed rgba(255,255,255,.08)}
+      td:last-child{border-bottom:none}
+      td::before{content:attr(data-label); display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+      .date{font-weight:700}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div>
+          <h1>School Calendar 2025–26</h1>
+          <p>All events, holidays, and exams in one clean table. Use search & filter to find anything fast.</p>
+          <div class="controls">
+            <label class="control">
+              🔎 <input id="search" placeholder="Search title or description…" />
+            </label>
+            <label class="control">
+              🏷️ <select id="typeFilter">
+                <option value="">All types</option>
+                <option value="academic">Academic</option>
+                <option value="events">Events</option>
+                <option value="religious-holiday">Religious Holiday</option>
+                <option value="national-holiday">National Holiday</option>
+                <option value="sports">Sports</option>
+                <option value="exam">Exam</option>
+                <option value="parent-meet">Parent Meet</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </header>
+
+      <div style="overflow:auto; max-height: 72vh">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th style="width: 140px">Date</th>
+              <th style="width: 30%">Title</th>
+              <th style="width: 160px">Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="footer">&copy; 2025 Gyan Niketan. All rights reserved. | Excellence in Education✨</div>
+    </div>
+  </div>
+
+  <script>
+    // ----------------- RAW DATA (merged where duplicate dates existed) -----------------
+    const schedule = {
+      '2025-03-27': [
+        { title: 'New Academic Session 2025-26', type: 'academic', description: 'New academic year begins for all classes' }
+      ],
+
+      '2025-04-07': [
+        { title: 'Ram Navmi', type: 'religious-holiday', description: 'Festival observance' },
+        { title: 'World Health Day', type: 'events', description: 'Health awareness day' }
+      ],
+      '2025-04-10': [
+        { title: 'Mahavir Jayanti', type: 'religious-holiday', description: 'Festival observance' }
+      ],
+      '2025-04-12': [
+        { title: 'Inter House English and Hindi Calligraphy Competition', type: 'events', description: 'Inter-house competition' }
+      ],
+      '2025-04-14': [
+        { title: 'Dr. B. R. Ambedkar Jayanti', type: 'national-holiday', description: 'Birth anniversary observance' }
+      ],
+      '2025-04-18': [
+        { title: 'World Heritage Day', type: 'events', description: 'Heritage awareness day' },
+        { title: 'Good Friday', type: 'national-holiday', description: 'holiday' }
+      ],
+      '2025-04-19': [
+        { title: 'Inter House Painting & Poster Making Competition', type: 'events', description: 'Inter-house art competition' }
+      ],
+      '2025-04-22': [
+        { title: 'Earth Day', type: 'events', description: 'Environmental awareness day' }
+      ],
+      '2025-04-26': [
+        { title: 'Investiture Ceremony', type: 'events', description: 'Student leadership ceremony' }
+      ],
+
+      '2025-05-01': [
+        { title: 'International Labour Day', type: 'national-holiday', description: 'International Workers Day' }
+      ],
+      '2025-05-07': [ { title: 'PT-1', type: 'exam', description: 'Examinations' } ],
+      '2025-05-08': [ { title: 'PT-1', type: 'exam', description: 'Examinations' } ],
+      '2025-05-09': [ { title: 'PT-1', type: 'exam', description: 'Examinations' } ],
+      '2025-05-10': [
+        { title: 'Mother\u2019s Day Celebration', type: 'events', description: 'Celebration program' },
+        { title: 'PT-1', type: 'exam', description: 'Examinations' }
+      ],
+      '2025-05-12': [
+        { title: 'Buddha Purnima', type: 'religious-holiday', description: 'Festival observance' }
+      ],
+      '2025-05-17': [
+        { title: 'Inter House Spell Bee Competition', type: 'events', description: 'Spelling competition' }
+      ],
+
+      '2025-06-05': [ { title: 'World Environment Day', type: 'events', description: 'Environmental awareness day' } ],
+      '2025-06-07': [ { title: 'Eid-ul-Zoha', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2025-06-21': [ { title: 'International Yoga Day', type: 'events', description: 'Yoga awareness and activities' } ],
+      '2025-06-26': [ { title: 'International Day Against Drug Abuse', type: 'events', description: 'Anti-drug awareness day' } ],
+      '2025-06-28': [ { title: 'Inter House English Literary / Speech Competition', type: 'events', description: 'Inter-house competition' } ],
+
+      '2025-07-05': [ { title: 'Inter House Eco Quiz / Speech / Skit Competition', type: 'events', description: 'Inter-house competition' } ],
+      '2025-07-06': [
+        { title: 'Muharram', type: 'religious-holiday', description: 'Observance' },
+        { title: 'Muharram', type: 'national-holiday', description: 'holiday' }
+      ],
+      '2025-07-11': [ { title: 'World Population Day', type: 'events', description: 'Population awareness day' } ],
+      '2025-07-12': [ { title: 'Inter House Quiz Competition (V\u2013VIII)', type: 'events', description: 'Inter-house quiz, junior group' } ],
+      '2025-07-19': [ { title: 'Inter House Quiz Competition (IX\u2013XII)', type: 'events', description: 'Inter-house quiz, senior group' } ],
+      '2025-07-28': [ { title: 'PT-2', type: 'exam', description: 'Examinations' } ],
+      '2025-07-29': [ { title: 'PT-2', type: 'exam', description: 'Examinations' } ],
+      '2025-07-30': [ { title: 'PT-2', type: 'exam', description: 'Examinations' } ],
+      '2025-07-31': [ { title: 'PT-2', type: 'exam', description: 'Examinations' } ],
+
+      '2025-08-02': [ { title: 'Inter House Patriotic Group Song Competition', type: 'events', description: 'Singing competition' } ],
+      '2025-08-09': [ { title: 'Raksha Bandhan', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2025-08-15': [ { title: 'Independence Day Celebration', type: 'sports', description: 'National celebration' } ],
+      '2025-08-23': [ { title: 'Inter House Sanskrit Recitation / Song / Stotram Competition', type: 'events', description: 'Inter-house competition' } ],
+      '2025-08-29': [ { title: 'World Sports Day', type: 'sports', description: 'Sports day observance' } ],
+      '2025-08-30': [
+        { title: 'Inter House Dress-up as Favourite Character (I\u2013IV)', type: 'events', description: 'Costume/dress-up competition' },
+        { title: 'Inter House Hindi Literary Competition (IX\u2013XII)', type: 'events', description: 'Literary competition' }
+      ],
+
+      '2025-09-05': [ { title: 'Teachers\u2019 Day Celebration', type: 'events', description: 'Teachers\u2019 Day program' } ],
+      '2025-09-06': [ { title: 'Inter School Hindi Literary Competition', type: 'events', description: 'Inter-school competition' } ],
+      '2025-09-13': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-14': [ { title: 'Hindi Diwas', type: 'events', description: 'Hindi language day' } ],
+      '2025-09-15': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-16': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-17': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-18': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-19': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-20': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-22': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-23': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-24': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-25': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-26': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-27': [ { title: 'Half Yearly', type: 'exam', description: 'Examinations' } ],
+      '2025-09-29': [ { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' } ],
+      '2025-09-30': [ { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' } ],
+
+      '2025-10-01': [ { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' } ],
+      '2025-10-02': [
+        { title: 'Gandhi Jayanti & Lal Bahadur Shastri Jayanti', type: 'national-holiday', description: 'National observances' },
+        { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' }
+      ],
+      '2025-10-03': [ { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' } ],
+      '2025-10-04': [ { title: 'Dussehra Break', type: 'national-holiday', description: 'holiday' } ],
+      '2025-10-11': [ { title: 'Parent-Teacher Meeting', type: 'parent-meet', description: 'PTM' } ],
+      '2025-10-18': [ { title: 'Inter House Rangoli Competition', type: 'events', description: 'Art/decoration competition' } ],
+      '2025-10-31': [ { title: 'National Integration Day', type: 'events', description: 'Unity and integration observance' } ],
+
+      '2025-11-02': [ { title: 'Inter School English Literary Competition', type: 'events', description: 'Inter-school competition' } ],
+      '2025-11-05': [ { title: 'Guru Nanak Jayanti & Kartik Purnima', type: 'religious-holiday', description: 'Festival observances' } ],
+      '2025-11-08': [ { title: 'Inter House Kabaddi', type: 'sports', description: 'Inter-house sports event' } ],
+      '2025-11-11': [ { title: 'National Education Day', type: 'events', description: 'Education day observance' } ],
+      '2025-11-14': [ { title: 'Children\u2019s Day', type: 'events', description: 'Children\u2019s Day celebration' } ],
+      '2025-11-15': [ { title: 'Inter House English Poem Recitation / Speech / Debate Competition', type: 'events', description: 'Inter-house competition' } ],
+      '2025-11-21': [ { title: 'Inter School Science Carnival (Day 1)', type: 'events', description: 'Science fair and events' } ],
+      '2025-11-22': [ { title: 'Inter School Science Carnival (Day 2)', type: 'events', description: 'Science fair and events' } ],
+      '2025-11-26': [
+        { title: 'Constitution Day', type: 'events', description: 'National Constitution Day observance' },
+        { title: 'PT-3', type: 'exam', description: 'Examinations' }
+      ],
+      '2025-11-27': [ { title: 'PT-3', type: 'exam', description: 'Examinations' } ],
+      '2025-11-28': [ { title: 'PT-3', type: 'exam', description: 'Examinations' } ],
+      '2025-11-29': [ { title: 'PT-3', type: 'exam', description: 'Examinations' } ],
+
+      '2025-12-03': [ { title: 'Birth Anniversary of Dr. Rajendra Prasad', type: 'events', description: 'Birth anniversary observance' } ],
+      '2025-12-06': [ { title: 'Inter School Volleyball / Kabaddi Competition', type: 'sports', description: 'Inter-school sports competition' } ],
+      '2025-12-13': [ { title: 'Inter House Cricket / Volleyball / Kho-Kho Competition', type: 'sports', description: 'Inter-house sports competitions' } ],
+      '2025-12-17': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-18': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-19': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-20': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-22': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-23': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-24': [ { title: 'Pre Board - I', type: 'exam', description: 'Examinations' } ],
+      '2025-12-25': [ { title: 'Christmas', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2025-12-29': [ { title: 'Annual Sports Day (Day 1)', type: 'sports', description: 'School annual sports meet' } ],
+      '2025-12-30': [ { title: 'Annual Sports Day (Day 2)', type: 'sports', description: 'School annual sports meet' } ],
+
+      '2026-01-10': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-12': [ { title: 'National Youth Day', type: 'events', description: 'Youth Day observance' }, { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-13': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-14': [ { title: 'Makar Sankranti', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2026-01-15': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-16': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-17': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-18': [ { title: 'Pre Board - II', type: 'exam', description: 'Examinations' } ],
+      '2026-01-19': [ { title: 'Pre Board - II ', type: 'exam', description: 'Examinations' }, { title: 'PT-4', type: 'exam', description: 'Examinations' } ],
+      '2026-01-20': [ { title: 'PT-4', type: 'exam', description: 'Examinations' } ],
+      '2026-01-21': [ { title: 'PT-4', type: 'exam', description: 'Examinations' } ],
+      '2026-01-22': [ { title: 'PT-4', type: 'exam', description: 'Examinations' } ],
+      '2026-01-23': [ { title: 'Basant Panchami & Birth Anniversary of Subhash Chandra Bose', type: 'events', description: 'Festival and birth anniversary' } ],
+      '2026-01-26': [ { title: 'Republic Day', type: 'religious-holiday', description: 'National celebration' } ],
+
+      '2026-02-13': [ { title: 'Foundation Day', type: 'events', description: 'School foundation day' } ],
+      '2026-02-15': [ { title: 'Maha Shivratri', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2026-02-21': [ { title: 'Mother Tongue Day (Matribhasha Diwas)', type: 'events', description: 'Language day observance' } ],
+
+      '2026-03-04': [ { title: 'Holi', type: 'religious-holiday', description: 'Festival observance' } ],
+      '2026-03-08': [ { title: 'International Women\u2019s Day', type: 'events', description: 'Women\u2019s Day observance' } ]
+    };
+
+    // ----------------- RENDER LOGIC -----------------
+    const tbody = document.querySelector('#tbl tbody');
+    const search = document.querySelector('#search');
+    const typeFilter = document.querySelector('#typeFilter');
+
+    const rows = Object.entries(schedule)
+      .flatMap(([date, items]) => items.map(e => ({
+        date,
+        title: e.title,
+        type: e.type,
+        description: e.description
+      })))
+      .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+    function typeClass(t){
+      return `pill t-${t}`.replace(/\s+/g,'-');
+    }
+
+    function render(){
+      const q = (search.value || '').trim().toLowerCase();
+      const t = (typeFilter.value || '').trim();
+
+      tbody.innerHTML = '';
+      let visible = 0;
+
+      for(const r of rows){
+        const hay = (r.title + ' ' + r.description).toLowerCase();
+        if(q && !hay.includes(q)) continue;
+        if(t && r.type !== t) continue;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="date" data-label="Date">${r.date}</td>
+          <td class="title" data-label="Title">${r.title}</td>
+          <td class="type" data-label="Type"><span class="${typeClass(r.type)}">${r.type}</span></td>
+          <td class="desc" data-label="Description">${r.description}</td>
+        `;
+        tbody.appendChild(tr);
+        visible++;
+      }
+
+      if(!visible){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 4; td.style.textAlign = 'center';
+        td.style.padding = '24px';
+        td.textContent = 'No items match your filters.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+    }
+
+    search.addEventListener('input', render);
+    typeFilter.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
